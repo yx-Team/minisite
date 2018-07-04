@@ -1,0 +1,42 @@
+
+@import './normalize.less';
+
+
+*{
+    padding: 0;
+    margin: 0;
+}
+ul,li{
+    list-style: none;
+    list-style-position: outside;
+}
+a{
+    text-decoration: none;
+}
+a:hover{
+    color: #333;
+}
+
+@vw_fontsize: 75; 
+@vw_design: 750;
+html {
+    font-size: (@vw_fontsize / (@vw_design)) * 100vw; 
+    @media screen and (max-width: 320px) {
+        font-size: 64px; /*no*/
+    }
+    @media screen and (min-width: 540px) {
+        font-size: 108px;/*no*/
+    }
+}
+
+body {
+     max-width: 540px;/*no*/
+     min-width: 320px;/*no*/
+    position: relative;
+    margin: 0 auto;
+    background: #e8e8ed;
+    font-family: -apple-system, Helvetica, sans-serif;
+    line-height: 1.5;
+    color: #666;
+    -webkit-text-size-adjust: 100% !important;
+}

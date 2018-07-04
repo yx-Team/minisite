@@ -1,0 +1,23 @@
+{
+  "name": "gulpwork",
+  "version": "1.0.0",
+  "description": "gulpwork",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "gulp dev",
+    "build": "gulp build"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^8.6.4",
+    "browser-sync": "^2.24.5",
+    "gulp": "^3.9.1",
+    "gulp-imagemin": "^4.1.0",
+    "gulp-less": "^3.5.0",
+    "gulp-postcss": "^7.0.1",
+    "gulp-pxrem": "^0.0.2",
+    "gulp-watch": "^5.0.0"
+  }
+}

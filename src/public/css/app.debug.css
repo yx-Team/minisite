@@ -1,0 +1,27 @@
+html {
+  font-size: 10vw;
+}
+
+@media screen and (max-width: 320px) {
+  html {
+    font-size: 32px;
+  }
+}
+
+@media screen and (min-width: 540px) {
+  html {
+    font-size: 54px;
+  }
+}
+
+body {
+  max-width: 540px;
+  min-width: 320px;
+  position: relative;
+  margin: 0 auto;
+  background: #e8e8ed;
+  font-family: -apple-system, Helvetica, sans-serif;
+  line-height: 1.5;
+  color: #666;
+  -webkit-text-size-adjust: 100% !important;
+}
