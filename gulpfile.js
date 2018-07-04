@@ -1,6 +1,5 @@
 const gulp = require('gulp')
-const watch = require('gulp-watch');
-const path = require('path')
+
 //图片
 const imagemin = require('gulp-imagemin');
 // css处理
@@ -29,29 +28,27 @@ var build = {
 gulp.task('dev',function(){
 	browserSync.init({
         server: {
-            baseDir: dev.basePath,
-            index:'index.html'
+			baseDir: dev.basePath,
+			//默认跳转的地址
+			// index:'html/index.html' 
+			// 打开目录
+			directory: true
         },
         port: 8080
-    });
-    gulp.watch([dev.html+'**/*.html',dev.basePath+'*.html'],['html'])
+	});
+    gulp.watch(dev.html+'**/*.html').on('change', reload)
 	gulp.watch(dev.less+'*.less',['less'])
 	gulp.watch(dev.lcss+'*.css',['css'])
 	gulp.watch(dev.js+'*.js',['js'])
 	gulp.watch(dev.images+'*',['img'])
 })
 gulp.task('build',['img:build'])
-gulp.task('html',function(){
-	console.log('htmlll')
-	return gulp.src([dev.html+'**/*.html',dev.basePath+'*.html'])
-				.pipe(reload({
-					stream:true
-				}))
-})
+
 
 gulp.task('less', function () {
   return gulp.src(dev.less+'*.less')
-    .pipe(less())
+	.pipe(less())
+	.on('error', swallowError)
     .pipe(gulp.dest(dev.lcss))
     .pipe(reload({
 		stream:true
@@ -94,3 +91,9 @@ gulp.task('img:build', function(){
 		]))
     .pipe(gulp.dest(build.images))
 });
+
+// 处理错误并触发end
+function swallowError(error) {
+  console.error(error.toString())
+  this.emit('end')
+}
