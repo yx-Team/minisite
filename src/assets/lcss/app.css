@@ -333,7 +333,7 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  font-size: 36px;
+  font-size: 24px;
 }
 .selector .face {
   font-size: 75px;
