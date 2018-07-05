@@ -1,16 +1,19 @@
 const gulp = require('gulp')
-
 //图片
 const imagemin = require('gulp-imagemin');
+const base64 = require('gulp-base64');
+
 // css处理
-const less = require('gulp-less')
-const postcss = require('gulp-postcss')
-const autoprefixer = require('autoprefixer')
+const less = require('gulp-less');
+const postcss = require('gulp-postcss');
+const autoprefixer = require('autoprefixer');
 const px2rem = require('gulp-ipx2rem');
+const cleanCss = require('gulp-clean-css'); //css压缩
+const rename=require('gulp-rename');//重命名
 // 浏览器异步刷新
 var browserSync = require('browser-sync').create(); 
 var reload=browserSync.reload;
-
+// 开发目录
 var dev = {
 	basePath:'src/',	
 	less:'src/assets/less/',
@@ -20,12 +23,14 @@ var dev = {
 	js:'src/assets/js/',
 	html:'src/html/'
 }
+// 生产目录
 var build = {
 	css:'build/assets/css/',
 	images:'build/assets/images/',
 	js:'build/assets/js/',
 	html:'build/html/'
 }
+// 开发环境
 gulp.task('dev',['html','less','css','js','img'],function(){
 	browserSync.init({
         server: {
@@ -44,7 +49,9 @@ gulp.task('dev',['html','less','css','js','img'],function(){
 	gulp.watch(dev.js+'*.js',['js'])
 	gulp.watch(dev.images+'*',['img'])
 })
-gulp.task('build',['img:build'])
+// 生产环境
+//gulp.task('build',['css:build'])
+
 
 gulp.task('html', function () {
 	return gulp.src(dev.html+'**/*.html')
@@ -70,7 +77,7 @@ gulp.task('css', function () {
 	]
     return gulp.src(dev.lcss+'*.css')
         .pipe(postcss(postcssPlugs))
-        .pipe(gulp.dest(dev.css))
+		.pipe(gulp.dest(dev.css))
         .pipe(px2rem({
 			baseDpr: 2,             // base device pixel ratio (default: 2)
 			threeVersion: false,    // whether to generate @1x, @2x and @3x version (default: false)
@@ -78,6 +85,7 @@ gulp.task('css', function () {
 			remUnit: 75,            // rem unit value (default: 75)
 			remPrecision: 6         // rem precision (default: 6)
 		  }))
+		
         .pipe(gulp.dest(build.css))
         .pipe(reload({
 			stream:true
@@ -97,6 +105,7 @@ gulp.task('img', function(){
 			stream:true
 		}))
 });
+/*-----------------------------build---------------------------------*/ 
 gulp.task('img:build', function(){
    return gulp.src(dev.images+'*')
     .pipe(imagemin([
@@ -106,7 +115,19 @@ gulp.task('img:build', function(){
 		]))
     .pipe(gulp.dest(build.images))
 });
-
+gulp.task('css:build', function () {
+    return gulp.src(build.css+'*.css')
+		.pipe(base64({
+			maxImageSize: 8*1024, // bytes 
+			debug: true
+		}))
+		.on('error', swallowError)
+		.pipe(cleanCss())
+		.pipe(rename({
+			suffix: ".min",
+		}))
+        .pipe(gulp.dest(build.css))
+});
 // 处理错误并触发end
 function swallowError(error) {
   console.error(error.toString())

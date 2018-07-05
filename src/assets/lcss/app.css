@@ -341,4 +341,20 @@ body {
 }
 .selector h4 {
   font-size: 36px;
+  width: 750px;
+  text-align: center;
+}
+.selector .icon-item {
+  width: 72px;
+  height: 72px;
+  background-size: cover;
+}
+.selector .icon-item1 {
+  background-image: url(../images/home_icon1.png);
+}
+.selector .icon-item2 {
+  background-image: url(../images/home_icon2.png);
+}
+.selector .icon-item3 {
+  background-image: url(../images/home_icon3.png);
 }
