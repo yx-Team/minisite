@@ -12,7 +12,7 @@ var browserSync = require('browser-sync').create();
 var reload=browserSync.reload;
 
 var dev = {
-	basePath:'src/',
+	basePath:'src/',	
 	less:'src/assets/less/',
 	lcss:'src/assets/lcss/',
 	css:'src/assets/css/',
@@ -21,14 +21,16 @@ var dev = {
 	html:'src/html/'
 }
 var build = {
-	css:'src/public/css/',
-	images:'src/public/images/',
-	js:'src/public/js/'
+	css:'build/assets/css/',
+	images:'build/assets/images/',
+	js:'build/assets/js/',
+	html:'build/html/'
 }
-gulp.task('dev',function(){
+gulp.task('dev',['html','less','css','js','img'],function(){
 	browserSync.init({
         server: {
-			baseDir: dev.basePath,
+			// 指定目录 root
+			baseDir: './',
 			//默认跳转的地址
 			// index:'html/index.html' 
 			// 打开目录
@@ -36,7 +38,7 @@ gulp.task('dev',function(){
         },
         port: 8080
 	});
-    gulp.watch(dev.html+'**/*.html').on('change', reload)
+    gulp.watch(dev.html+'**/*.html',['html'])
 	gulp.watch(dev.less+'*.less',['less'])
 	gulp.watch(dev.lcss+'*.css',['css'])
 	gulp.watch(dev.js+'*.js',['js'])
@@ -44,6 +46,13 @@ gulp.task('dev',function(){
 })
 gulp.task('build',['img:build'])
 
+gulp.task('html', function () {
+	return gulp.src(dev.html+'**/*.html')
+	  .pipe(gulp.dest(build.html))
+	  .pipe(reload({
+		  stream:true
+	  }))
+  })
 
 gulp.task('less', function () {
   return gulp.src(dev.less+'*.less')
