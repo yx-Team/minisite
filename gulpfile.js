@@ -1,4 +1,6 @@
 const gulp = require('gulp')
+const del = require('del')
+const gulpSequence = require('gulp-sequence') //任务执行序列化插件
 //图片
 const imagemin = require('gulp-imagemin');
 const base64 = require('gulp-base64');
@@ -31,7 +33,7 @@ var build = {
 	html:'build/html/'
 }
 // 开发环境
-gulp.task('dev',['html','less','css','js','img'],function(){
+gulp.task('dev',['init'],function(){
 	browserSync.init({
         server: {
 			// 指定目录 root
@@ -45,10 +47,12 @@ gulp.task('dev',['html','less','css','js','img'],function(){
 	});
     gulp.watch(dev.html+'**/*.html',['html'])
 	gulp.watch(dev.less+'*.less',['less'])
-	gulp.watch(dev.lcss+'*.css',['css'])
+	gulp.watch(dev.css+'*.css',['css'])
 	gulp.watch(dev.js+'*.js',['js'])
 	gulp.watch(dev.images+'*',['img'])
 })
+// 开始运行时，删除build目录，并将资源处理并复制到build
+gulp.task('init',gulpSequence('del','html','less','css','js','img'))
 // 生产环境
 //gulp.task('build',['css:build'])
 
@@ -63,20 +67,20 @@ gulp.task('html', function () {
 
 gulp.task('less', function () {
   return gulp.src(dev.less+'*.less')
+    
 	.pipe(less())
 	.on('error', swallowError)
-    .pipe(gulp.dest(dev.lcss))
+    .pipe(gulp.dest(dev.css))
     .pipe(reload({
 		stream:true
 	}))
 })
 
 gulp.task('css', function () {
-	var postcssPlugs = [
-		autoprefixer({browsers: ['last 2 version']})
-	]
-    return gulp.src(dev.lcss+'*.css')
-        .pipe(postcss(postcssPlugs))
+	return gulp.src(dev.css+'*.css')
+        .pipe(postcss( [
+			autoprefixer({browsers: ['last 2 version']})
+		]))
 		.pipe(gulp.dest(dev.css))
         .pipe(px2rem({
 			baseDpr: 2,             // base device pixel ratio (default: 2)
@@ -105,6 +109,11 @@ gulp.task('img', function(){
 			stream:true
 		}))
 });
+gulp.task('del',function(){
+	return del(['build/']).then(paths => {
+		console.log('Deleted files and folders:\n', paths.join('\n'));
+	});
+})
 /*-----------------------------build---------------------------------*/ 
 gulp.task('img:build', function(){
    return gulp.src(dev.images+'*')
