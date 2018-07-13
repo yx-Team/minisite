@@ -3,60 +3,98 @@ body {
   height: 100%;
   background: #f7f7f7;
 }
+
 body {
-  width: 750px;
+  max-width: 10rem;
   position: relative;
   margin: 0 auto;
   background: #e8e8ed;
-  font-family: -apple-system, Helvetica, sans-serif;
+  font-family: "Helvetica Neue", "Microsoft YaHei", Helvetica, STHeiTi, Arial, sans-serif;
   line-height: 1.5;
   color: #666;
   -webkit-text-size-adjust: 100% !important;
 }
+
 .selector {
   background: #fff;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
+  -ms-flex: 1;
+  flex: 1;
   height: 100%;
   -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
   -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  font-size: 32px;
-  /*px*/
+  -ms-flex-direction: column;
+  flex-direction: column;
 }
+
+[data-dpr="1"] .selector {
+  font-size: 16px;
+}
+
+[data-dpr="2"] .selector {
+  font-size: 32px;
+}
+
+[data-dpr="3"] .selector {
+  font-size: 48px;
+}
+
 .selector .face {
-  font-size: 150px;
-  /*px*/
   font-family: 'arial';
 }
+
+[data-dpr="1"] .selector .face {
+  font-size: 25px;
+}
+
+[data-dpr="2"] .selector .face {
+  font-size: 50px;
+}
+
+[data-dpr="3"] .selector .face {
+  font-size: 75px;
+}
+
 .selector h4 {
-  font-size: 90px;
-  /*px*/
-  width: 750px;
+  width: 10rem;
   text-align: center;
 }
+
+[data-dpr="1"] .selector h4 {
+  font-size: 18px;
+}
+
+[data-dpr="2"] .selector h4 {
+  font-size: 36px;
+}
+
+[data-dpr="3"] .selector h4 {
+  font-size: 54px;
+}
+
 .selector .icon-item {
-  width: 72px;
-  height: 72px;
+  width: 0.96rem;
+  height: 0.96rem;
   background-size: cover;
 }
+
 .selector .icon-item1 {
   background-image: url(../images/home_icon1.png);
 }
+
 .selector .icon-item2 {
   background-image: url(../images/home_icon2.png);
 }
+
 .selector .icon-item3 {
   background-image: url(../images/home_icon3.png);
 }
