@@ -6,10 +6,13 @@ const filter = require("gulp-filter"); // 过滤
 const del = require("del"); // 删除插件
 const rename = require("gulp-rename"); // 重命名
 const change = require("gulp-changed"); // 只修改改动的文件
-const gulpif = require("gulp-if");
+const gulpif = require("gulp-if"); //if条件
+const gutil = require("gulp-util");
+const plumber = require("gulp-plumber"); //输出错误
+const notify = require("gulp-notify"); //任务通知
 // HTML
-const useref = require("gulp-useref");
-const htmlminify = require("gulp-html-minify");
+const useref = require("gulp-useref"); //页面中合并资源
+const htmlminify = require("gulp-html-minify"); //html压缩
 // IMAGE
 const imagemin = require("gulp-imagemin"); //图片压缩
 const base64 = require("gulp-base64"); // 图片转base64
@@ -20,6 +23,7 @@ const autoprefixer = require("autoprefixer");
 const px2rem = require("gulp-ipx2rem");
 const cleanCss = require("gulp-clean-css"); //css压缩
 // JS
+const babel = require("gulp-babel");
 const beautify = require("gulp-beautify");
 const uglify = require("gulp-uglify");
 
@@ -29,21 +33,9 @@ var reload = browserSync.reload;
 // build得一些插件
 const zip = require("gulp-zip");
 const config = require("./config.json");
-// 开发目录
-// var dev = {
-// 	less:'src/assets/less/',
-// 	css:'src/assets/css/',
-// 	images:'src/assets/images/',
-// 	js:'src/assets/js/',
-// 	html:'src/html/'
-// }
-// // 生产目录
-// var build = {
-// 	css:'build/assets/css/',
-// 	images:'build/assets/images/',
-// 	js:'build/assets/js/',
-// 	html:'build/html/'
-// }
+let babelFilter = config.babel.filter;
+let jsminFilter = config.uglify.filter;
+
 // 开发环境
 gulp.task("dev", ["init"], function() {
   browserSync.init({
@@ -61,11 +53,14 @@ gulp.task("dev", ["init"], function() {
   gulp.watch(config.dev.html + "**/*.html", ["html"]);
   gulp.watch(config.dev.less + "*.less", ["less"]);
   gulp.watch(config.dev.css + "*.css", ["css"]);
-  gulp.watch(config.dev.js + "*.js", ["js"]);
+  gulp.watch(config.dev.js + "**/*.js", ["js", "babel"]);
   gulp.watch(config.dev.images + "*", ["img"]);
 });
 // 开始运行时，删除build目录，并将资源处理并复制到build
-gulp.task("init", gulpSequence("del", "less", "css", "js", "img", "html"));
+gulp.task(
+  "init",
+  gulpSequence("del", "less", "css", "js", "babel", "img", "html")
+);
 // 生产环境
 gulp.task(
   "build",
@@ -74,10 +69,11 @@ gulp.task(
     "less",
     "css",
     "js",
+    "babel:build",
+    "js:build",
     "img",
     "html",
     "css:build",
-    "js:build",
     "html:build"
   )
 );
@@ -85,6 +81,7 @@ gulp.task(
 gulp.task("html", function() {
   return gulp
     .src(config.dev.html + "**/*.html")
+    .pipe(change(config.build.html))
     .pipe(gulp.dest(config.build.html))
     .pipe(
       reload({
@@ -96,8 +93,14 @@ gulp.task("html", function() {
 gulp.task("less", function() {
   return gulp
     .src(config.dev.less + "*.less")
+    .pipe(plumber({
+      errorHandler: function(error) {
+        console.log(error);
+        this.emit("end");
+      }
+    }))
+    .pipe(change(config.dev.css))
     .pipe(less())
-    .on("error", swallowError)
     .pipe(gulp.dest(config.dev.css))
     .pipe(
       reload({
@@ -109,11 +112,11 @@ gulp.task("less", function() {
 gulp.task("css", function() {
   return gulp
     .src(config.dev.css + "*.css")
-    .pipe(postcss([autoprefixer({ browsers: ["last 2 version"] })]))
+    .pipe(plumber())
+    .pipe(change(config.build.css))
+    .pipe(postcss([autoprefixer(config.autoprefixer.options)]))
     .pipe(gulp.dest(config.dev.css))
-    .pipe(
-      gulpif(config.px2rem.open,px2rem(config.px2rem.optipng))
-    )
+    .pipe(gulpif(config.px2rem.open, px2rem(config.px2rem.optipng)))
     .pipe(gulp.dest(config.dev.css))
     .pipe(gulp.dest(config.build.css))
     .pipe(
@@ -122,9 +125,33 @@ gulp.task("css", function() {
       })
     );
 });
+
 gulp.task("js", function() {
   return gulp
     .src(config.dev.js + "**/*.js")
+    .pipe(plumber())
+    .pipe(change(config.build.js))
+    .pipe(gulp.dest(config.build.js))
+    .pipe(
+      reload({
+        stream: true
+      })
+    );
+});
+
+gulp.task("babel", function() {
+  return gulp
+    .src([config.dev.js + "**/*.js", ...config.babel.filter])
+    .pipe(change(config.build.js))
+    .pipe(
+      plumber({
+        errorHandler: function(error) {
+          console.log(error);
+          this.emit("end");
+        }
+      })
+    )
+    .pipe(babel(config.babel.options))
     .pipe(gulp.dest(config.build.js))
     .pipe(
       reload({
@@ -135,6 +162,7 @@ gulp.task("js", function() {
 gulp.task("img", function() {
   return gulp
     .src(config.dev.images + "*")
+    .pipe(change(config.build.images))
     .pipe(gulp.dest(config.build.images))
     .pipe(
       reload({
@@ -153,8 +181,9 @@ gulp.task("html:build", function() {
   return gulp
     .src(config.build.html + "**/*.html")
     .pipe(useref())
-    .pipe(gulpif(false, htmlminify()))
-    .pipe(gulp.dest(config.build.html));
+    .pipe(gulpif(config.htmlminify.compress, htmlminify()))
+    .pipe(gulp.dest(config.build.html))
+    .pipe(notify("构建成功"));
 });
 gulp.task("img:build", function() {
   return gulp
@@ -170,24 +199,43 @@ gulp.task("img:build", function() {
 });
 // css压缩
 gulp.task("css:build", function() {
-  return (
-    gulp
-      .src(config.build.css + "*.css")
-      .pipe(
-        base64(config.cleanCss.base64)
-      )
-      .on("error", swallowError)
-      .pipe(gulpif(config.cleanCss.compress, cleanCss()))
-      .pipe(gulp.dest(config.build.css))
-  );
+  return gulp
+    .src(config.build.css + "*.css")
+    .pipe(plumber())
+    .pipe(base64(config.cleanCss.base64))
+    .pipe(gulpif(config.cleanCss.compress, cleanCss()))
+    .pipe(gulp.dest(config.build.css));
 });
 // js压缩美化
 gulp.task("js:build", function() {
   return gulp
-    .src(config.dev.js + "**/*.js")
-    .pipe(filter(config.uglify.filter)) //过滤不需要压缩得js
+    .src([config.dev.js + "**/*.js", ...config.uglify.filter])
+    .pipe(
+      plumber({
+        errorHandler: function(error) {
+          console.log(error);
+          this.emit("end");
+        }
+      })
+    )
     .pipe(gulpif(config.uglify.compress, uglify(), beautify()))
     .pipe(gulp.dest(config.build.js));
+});
+//babel
+gulp.task("babel:build",function() {
+  return gulp
+    .src([config.dev.js + "**/*.js", ...config.babel.filter])
+    .pipe(
+      plumber({
+        errorHandler: function(error) {
+          console.log(error);
+          this.emit("end");
+        }
+      })
+    )
+    .pipe(babel(config.babel.options))
+    .pipe(gulp.dest(config.build.js));
+    
 });
 // 打包zip
 gulp.task("zip", function() {
@@ -197,7 +245,9 @@ gulp.task("zip", function() {
     .pipe(gulp.dest("./"));
 });
 // 处理错误并触发end
+
 function swallowError(error) {
-  console.error(error.toString());
+  gutil.log(gutil.colors.red("Error"), "：", error.toString());
+
   this.emit("end");
 }

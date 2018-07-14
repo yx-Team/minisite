@@ -1,42 +1,54 @@
 {
-    "dev":{
-        "baseDir":"src/",
-        "less":"src/assets/less/",
-        "css":"src/assets/css/",
-        "images":"src/assets/images/",
-        "js":"src/assets/js/",
-        "html":"src/html/"
+  "dev": {
+    "baseDir": "src/",
+    "less": "src/assets/less/",
+    "css": "src/assets/css/",
+    "images": "src/assets/images/",
+    "js": "src/assets/js/",
+    "html": "src/html/"
+  },
+  "build": {
+    "baseDir": "build/",
+    "css": "build/assets/css/",
+    "images": "build/assets/images/",
+    "js": "build/assets/js/",
+    "html": "build/html/"
+  },
+  "htmlminify": {
+    "compress": true
+  },
+  "uglify": {
+    "compress": true,
+    "filter": ["!src/assets/js/lib/*.js"]
+  },
+  "babel": {
+    "options": {
+      "presets": ["env"]
     },
-    "build":{
-        "baseDir":"build/",
-        "css":"build/assets/css/",
-        "images":"build/assets/images/",
-        "js":"build/assets/js/",
-        "html":"build/html/"
-    },
-    "uglify":{
-        "compress":false,
-        "filter":["!src/assets/js/lib/*js"]
-    }, 
-    "cleanCss":{
-        "compress":true,
-        "options":{"compatibility": "ie8"},
-        "base64":{
-            "maxImageSize": 9000,
-            "debug": true
-        }
-    },
-    "px2rem":{
-        "open":true,
-        "options":{
-            "baseDpr": 2, 
-            "threeVersion": false, 
-            "remVersion": true, 
-            "remUnit": 75,
-            "remPrecision": 6
-          }
-    },
-    "zip":{
-        "name":"minisite.zip"
+    "filter": ["!src/assets/js/lib/*.js"]
+  },
+  "cleanCss": {
+    "compress": true,
+    "options": { "compatibility": "ie8" },
+    "base64": {
+      "maxImageSize": 9000,
+      "debug": true
     }
+  },
+  "autoprefixer": {
+    "options": { "browsers": ["last 2 version"] }
+  },
+  "px2rem": {
+    "open": true,
+    "options": {
+      "baseDpr": 2,
+      "threeVersion": false,
+      "remVersion": true,
+      "remUnit": 75,
+      "remPrecision": 6
+    }
+  },
+  "zip": {
+    "name": "minisite.zip"
+  }
 }

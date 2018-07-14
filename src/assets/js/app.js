@@ -1,4 +1,1 @@
-function app(){
-    console.log('app')
-}
-app();
+let hello = '123'

@@ -53,15 +53,15 @@ body {
 }
 
 [data-dpr="1"] .selector .face {
-  font-size: 25px;
+  font-size: 70px;
 }
 
 [data-dpr="2"] .selector .face {
-  font-size: 50px;
+  font-size: 140px;
 }
 
 [data-dpr="3"] .selector .face {
-  font-size: 75px;
+  font-size: 210px;
 }
 
 .selector h4 {
