@@ -183,7 +183,10 @@ gulp.task("html:build", function() {
     .pipe(useref())
     .pipe(gulpif(config.htmlminify.compress, htmlminify()))
     .pipe(gulp.dest(config.build.html))
-    .pipe(notify("构建成功"));
+    .pipe(notify({
+      title:'云信构建工具',
+      message:'构建成功'
+    }));
 });
 gulp.task("img:build", function() {
   return gulp
@@ -209,7 +212,7 @@ gulp.task("css:build", function() {
 // js压缩美化
 gulp.task("js:build", function() {
   return gulp
-    .src([config.dev.js + "**/*.js", ...config.uglify.filter])
+    .src([config.build.js + "**/*.js", ...config.uglify.filter])
     .pipe(
       plumber({
         errorHandler: function(error) {
@@ -235,13 +238,17 @@ gulp.task("babel:build",function() {
     )
     .pipe(babel(config.babel.options))
     .pipe(gulp.dest(config.build.js));
-    
 });
+
 // 打包zip
 gulp.task("zip", function() {
   return gulp
     .src(config.build.baseDir + "**")
     .pipe(zip(config.zip.name))
+    .pipe(notify({
+      title:'云信构建工具',
+      message:'zip打包成功'
+    }))
     .pipe(gulp.dest("./"));
 });
 // 处理错误并触发end

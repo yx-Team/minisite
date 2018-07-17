@@ -19,7 +19,7 @@
   },
   "uglify": {
     "compress": true,
-    "filter": ["!src/assets/js/lib/*.js"]
+    "filter": ["!build/assets/js/lib/*.js"]
   },
   "babel": {
     "options": {
