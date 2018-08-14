@@ -190,7 +190,7 @@ gulp.task("html:build", function() {
 });
 gulp.task("img:build", function() {
   return gulp
-    .src(config.dev.images + "*")
+    .src(config.dev.images + "**/*")
     .pipe(
       imagemin([
         imagemin.gifsicle({ interlaced: true }),
